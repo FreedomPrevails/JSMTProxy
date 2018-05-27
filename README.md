@@ -3,7 +3,7 @@
 
 High Performance NodeJS MTProto Proxy
 
-## Installation
+## Linux Installation
 
 Install NodeJS, NPM, GIT and PM2 on your server:
 
@@ -17,6 +17,14 @@ $> npm install pm2 -g
 $> yum install nodejs npm git
 $> npm install pm2 -g
 ```
+Check the version of NodeJS, it should be version 6 or higher:
+```
+$> nodejs -v
+v6.14.2
+```
+If it is lower than 6, you need to upgrade your linux OS or install nodejs from its website:
+https://nodejs.org/en/download/
+
 Clone repository on your server:
 ```
 $> git clone https://github.com/FreedomPrevails/JSMTProxy.git
@@ -34,7 +42,8 @@ $> pm2 start mtproxy.js -i max
 You can use pm2 to list running processes and check their logs:
 ```
 $> pm2 list
-$> pm2 log #id
+$> pm2 log mtproxy
+$> pm2 show mtproxy
 ```
 
 ## License
