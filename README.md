@@ -10,6 +10,10 @@ Install NodeJS, NPM, GIT and PM2 on your server:
 ### Debian & Ubuntu
 ```
 $> apt-get install nodejs npm git
+$> sudo apt-get install curl
+$> curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+$> sudo apt-get update
+$> sudo apt-get install nodejs
 $> npm install pm2 -g
 ```
 ### CentsOS & RHEL
