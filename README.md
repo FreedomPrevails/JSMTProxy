@@ -45,6 +45,25 @@ $> pm2 list
 $> pm2 log mtproxy
 $> pm2 show mtproxy
 ```
+## Windows Installation
+
+Download and install NodeJS for Windows using this link: https://nodejs.org/dist/v8.11.2/node-v8.11.2-x64.msi
+
+After installation is complete, enter "Command Prompt" and install PM2 by following command:
+```
+C:\> npm install pm2 -g
+```
+Download JSMTProxy using this link: https://github.com/FreedomPrevails/JSMTProxy/archive/master.zip
+
+Extract the zip file into a new folder. Edit config.json (as explained above) if you wish to change port number or secret.
+
+Start the proxy server from "Command Prompt" by following command:
+```
+C:\> pm2 start mtproxy.js -i max
+```
+**Note: You may need to open the proxy port number in your Windows firewall in order for it to accept connections.**
+
+
 
 ## License
 
