@@ -3,6 +3,8 @@
 
 High Performance NodeJS MTProto Proxy
 
+### Latest Active MTProto Proxies: https://t.me/MTProxy
+
 ## Linux Installation
 
 Install NodeJS, NPM, GIT and PM2 on your server:
