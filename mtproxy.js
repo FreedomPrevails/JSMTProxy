@@ -1,20 +1,16 @@
-const version='1.0.0';
+const version='1.0.1';
+const contributor='KarimovDev';
 const author='FreedomPrevails';
 const github='https://github.com/FreedomPrevails/JSMTProxy';
 
 const net = require('net');
 const crypto = require('crypto');
-const exec = require('child_process').exec;
-const process = require('process');
-const fs = require('fs');
+const secret = 'b0cbcef5a486d9636472ac27f8e11a9d';
+const port = 8989;
 
 const CON_TIMEOUT = 5 * 60000; //5 Mins
-const REPORT_CON_SEC = 10;
 const MIN_IDLE_SERVERS = 4;
 
-exec('/usr/bin/prlimit --pid ' + process.pid + ' --nofile=81920:81920', (error, stdout, stderr) => {});
-
-var client_cons = [];
 var telegram_servers = ["149.154.175.50", "149.154.167.51", "149.154.175.100", "149.154.167.91", "149.154.171.5"];
 var telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS];
 
@@ -22,13 +18,6 @@ var server_idle_cons = [];
 for (let i = 0; i < telegram_servers.length; i++) {
 	server_idle_cons[i] = [];
 }
-
-var con_count = [];
-for (let i = 0; i < telegram_servers.length; i++) {
-	con_count.push(0);
-}
-
-var configObj = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 function reverseInplace (buffer) {
   for (var i = 0, j = buffer.length - 1; i < j; ++i, --j) {
@@ -116,16 +105,6 @@ function create_idle_server(id, ip) {
 }
 
 setInterval(() => {
-	console.log('Connections per second:', Math.ceil((con_count[0] + con_count[1] + con_count[2] + con_count[3] + con_count[4]) / REPORT_CON_SEC), 'DC1:', Math.ceil(con_count[0] / REPORT_CON_SEC), 'DC2:', Math.ceil(con_count[1] / REPORT_CON_SEC), 'DC3:', Math.ceil(con_count[2] / REPORT_CON_SEC), 'DC4:', Math.ceil(con_count[3] / REPORT_CON_SEC), 'DC5:', Math.ceil(con_count[4] / REPORT_CON_SEC));
-	let n = 0;
-	for (let i = 0; i < telegram_servers.length; i++) {
-		n = Math.ceil(con_count[i] / REPORT_CON_SEC);
-		telegram_idle_num[i] = (n >= 4) ? n : 4;
-		con_count[i] = 0;
-	}
-}, REPORT_CON_SEC * 1000);
-
-setInterval(() => {
 	let server_count = telegram_servers.length;
 	for (var i = 0; i < server_count; i++) {
 		if (server_idle_cons[i].length < telegram_idle_num[i]) {
@@ -186,7 +165,7 @@ net.createServer(function(socket) {
 			let encryptIv_client = Buffer.allocUnsafe(16);
 			keyIv.copy(encryptIv_client, 0, 32);
 
-			let binSecret = Buffer.from(configObj.secret, 'hex');
+			let binSecret = Buffer.from(secret, 'hex');
 
 			decryptKey_client = crypto.createHash('sha256').update(Buffer.concat([decryptKey_client, binSecret])).digest();
 			encryptKey_client = crypto.createHash('sha256').update(Buffer.concat([encryptKey_client, binSecret])).digest();
@@ -220,12 +199,12 @@ net.createServer(function(socket) {
 
 				do {
 					socket.server_socket = server_idle_cons[socket.dcId].shift();
-					if (!socket.server_socket.writable) {
+					if (socket.server_socket && !socket.server_socket.writable) {
 						socket.server_socket.destroy();
 					}
-				} while (!socket.server_socket.writable);
+				} while (socket.server_socket && !socket.server_socket.writable);
 
-				con_count[socket.dcId]++;
+				// con_count[socket.dcId]++;
 				socket.server_socket.setTimeout(CON_TIMEOUT);
 				socket.server_socket.setKeepAlive(false);
 				socket.server_socket.client_socket = socket;
@@ -246,4 +225,6 @@ net.createServer(function(socket) {
 		}
 	});
 
-}).listen(configObj.port);
+}).listen(port);
+
+console.log(`mtproxy started on port: ${port}`);
