@@ -29,6 +29,9 @@ for (let i = 0; i < telegram_servers.length; i++) {
 }
 
 var configObj = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+if (Buffer.from(configObj.secret, 'hex').toString('hex') !== configObj.secret) {
+  return console.log('Secret is invalid: Secret must be a hex number');
+}
 
 function reverseInplace (buffer) {
   for (var i = 0, j = buffer.length - 1; i < j; ++i, --j) {
