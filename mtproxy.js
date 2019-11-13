@@ -18,7 +18,7 @@ const server_idle_cons = [];
 telegram_servers.forEach((el, i) => server_idle_cons[i] = []);
 
 const reverseInplace = buffer => {
-  for (const i = 0, j = buffer.length - 1; i < j; ++i, --j) {
+  for (let i = 0, j = buffer.length - 1; i < j; ++i, --j) {
     const temp = buffer[j];
     buffer[j] = buffer[i];
     buffer[i] = temp;
