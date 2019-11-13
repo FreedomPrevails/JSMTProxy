@@ -1,4 +1,4 @@
-const version='1.0.1';
+const version='1.0.2';
 const contributor='KarimovDev';
 const author='FreedomPrevails';
 const github='https://github.com/FreedomPrevails/JSMTProxy';
@@ -16,9 +16,6 @@ const telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS,
 
 const server_idle_cons = [];
 telegram_servers.forEach((el, i) => server_idle_cons[i] = []);
-// for (let i = 0; i < telegram_servers.length; i++) {
-// 	server_idle_cons[i] = [];
-// }
 
 const reverseInplace = buffer => {
   for (const i = 0, j = buffer.length - 1; i < j; ++i, --j) {
