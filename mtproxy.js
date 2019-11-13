@@ -11,8 +11,8 @@ const port = 8989;
 const CON_TIMEOUT = 3 * 60000;
 const MIN_IDLE_SERVERS = 5;
 
-const telegram_servers = ["149.154.175.50", "149.154.167.51", "149.154.175.100", "149.154.167.91", "149.154.171.5", "149.154.167.99"];
-const telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS];
+const telegram_servers = ["149.154.175.50", "149.154.167.51", "149.154.175.100", "149.154.167.91", "149.154.171.5"];
+const telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS];
 
 const server_idle_cons = [];
 telegram_servers.forEach((el, i) => server_idle_cons[i] = []);
