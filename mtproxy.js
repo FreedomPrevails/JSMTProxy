@@ -173,7 +173,7 @@ const connListener = (socket) => {
 			let dec_auth_packet = socket.cipher_dec_client.update(buf64);
 			socket.dcId = Math.abs(dec_auth_packet.readInt16LE(60)) - 1;
 
-			for (const i = 0; i < 4; i++) {
+			for (let i = 0; i < 4; i++) {
 				if (dec_auth_packet[56 + i] != 0xef) {
 					socket.destroy();
 					return;
