@@ -8,27 +8,28 @@ const crypto = require('crypto');
 const secret = 'b0cbcef5a486d9636472ac27f8e11a9d';
 const port = 8989;
 
-const CON_TIMEOUT = 5 * 60000; //5 Mins
-const MIN_IDLE_SERVERS = 4;
+const CON_TIMEOUT = 3 * 60000;
+const MIN_IDLE_SERVERS = 5;
 
-var telegram_servers = ["149.154.175.50", "149.154.167.51", "149.154.175.100", "149.154.167.91", "149.154.171.5"];
-var telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS];
+const telegram_servers = ["149.154.175.50", "149.154.167.51", "149.154.175.100", "149.154.167.91", "149.154.171.5", "149.154.167.99"];
+const telegram_idle_num = [MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS, MIN_IDLE_SERVERS];
 
-var server_idle_cons = [];
-for (let i = 0; i < telegram_servers.length; i++) {
-	server_idle_cons[i] = [];
-}
+const server_idle_cons = [];
+telegram_servers.forEach((el, i) => server_idle_cons[i] = []);
+// for (let i = 0; i < telegram_servers.length; i++) {
+// 	server_idle_cons[i] = [];
+// }
 
-function reverseInplace (buffer) {
-  for (var i = 0, j = buffer.length - 1; i < j; ++i, --j) {
-    var t = buffer[j]
-    buffer[j] = buffer[i]
-    buffer[i] = t
+const reverseInplace = buffer => {
+  for (const i = 0, j = buffer.length - 1; i < j; ++i, --j) {
+    const temp = buffer[j];
+    buffer[j] = buffer[i];
+    buffer[i] = temp;
   }
 }
 
-function create_idle_server(id, ip) {
-	let client = new net.Socket();
+const create_idle_server = (id, ip) => {
+	const client = new net.Socket();
 	client.setKeepAlive(true);
 
 	client.on('timeout', () => {
@@ -105,15 +106,14 @@ function create_idle_server(id, ip) {
 }
 
 setInterval(() => {
-	let server_count = telegram_servers.length;
-	for (var i = 0; i < server_count; i++) {
+	telegram_servers.forEach((tgServer, i) => {
 		if (server_idle_cons[i].length < telegram_idle_num[i]) {
-			create_idle_server(i, telegram_servers[i]);
+			create_idle_server(i, tgServer);
 		}
-	}
-}, 20);
+	});
+}, 10);
 
-net.createServer(function(socket) {
+const connListener = (socket) => {
 
 	socket.setTimeout(CON_TIMEOUT);
 
@@ -125,16 +125,16 @@ net.createServer(function(socket) {
 		socket.destroy();
 	});
 
-	socket.on('end', function() {
+	socket.on('end', () => {
 		if (socket.server_socket != null) {
 			socket.server_socket.destroy();
 		}
 	});
 
-	socket.on('data', function(data) {
+	socket.on('data', (data) => {
 
 		if (socket.init == null && (data.length == 41 || data.length == 56)) {
-			let client_ip = socket.remoteAddress.substr(7, socket.remoteAddress.length);
+			const client_ip = socket.remoteAddress.substr(7, socket.remoteAddress.length);
 			socket.destroy();
 			return;
 		}
@@ -176,7 +176,7 @@ net.createServer(function(socket) {
 			let dec_auth_packet = socket.cipher_dec_client.update(buf64);
 			socket.dcId = Math.abs(dec_auth_packet.readInt16LE(60)) - 1;
 
-			for (var i = 0; i < 4; i++) {
+			for (const i = 0; i < 4; i++) {
 				if (dec_auth_packet[56 + i] != 0xef) {
 					socket.destroy();
 					return;
@@ -192,7 +192,7 @@ net.createServer(function(socket) {
 			socket.init = true;
 		}
 
-		let payload = socket.cipher_dec_client.update(data);
+		const payload = socket.cipher_dec_client.update(data);
 
 		if (socket.server_socket == null) {
 			if (server_idle_cons[socket.dcId].length > 0) {
@@ -202,7 +202,7 @@ net.createServer(function(socket) {
 					if (socket.server_socket && !socket.server_socket.writable) {
 						socket.server_socket.destroy();
 					}
-				} while (socket.server_socket && !socket.server_socket.writable);
+				} while (!socket.server_socket.writable);
 
 				// con_count[socket.dcId]++;
 				socket.server_socket.setTimeout(CON_TIMEOUT);
@@ -225,6 +225,8 @@ net.createServer(function(socket) {
 		}
 	});
 
-}).listen(port);
+}
+
+net.createServer(connListener).listen(port);
 
 console.log(`mtproxy started on port: ${port}`);
