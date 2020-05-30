@@ -116,7 +116,26 @@ function create_idle_server(id, ip) {
 }
 
 setInterval(() => {
-	console.log('Connections per second:', Math.ceil((con_count[0] + con_count[1] + con_count[2] + con_count[3] + con_count[4]) / REPORT_CON_SEC), 'DC1:', Math.ceil(con_count[0] / REPORT_CON_SEC), 'DC2:', Math.ceil(con_count[1] / REPORT_CON_SEC), 'DC3:', Math.ceil(con_count[2] / REPORT_CON_SEC), 'DC4:', Math.ceil(con_count[3] / REPORT_CON_SEC), 'DC5:', Math.ceil(con_count[4] / REPORT_CON_SEC));
+	const dc0 = Math.ceil((con_count[0] + con_count[1] + con_count[2] + con_count[3] + con_count[4]) / REPORT_CON_SEC);
+	const dc1 = Math.ceil(con_count[0] / REPORT_CON_SEC);
+	const dc2 = Math.ceil(con_count[1] / REPORT_CON_SEC);
+	const dc3 = Math.ceil(con_count[2] / REPORT_CON_SEC);
+	const dc4 = Math.ceil(con_count[3] / REPORT_CON_SEC);
+	const dc5 = Math.ceil(con_count[4] / REPORT_CON_SEC);
+	console.log(
+		'\033[3' + dc0 + ';2;228mConnections per second:',
+		dc0,
+		'\t\033[3' + dc1 + ';2;228mDC1:',
+		dc1,
+		'\t\033[3' + dc2 + ';2;228mDC2:',
+		dc2,
+		'\t\033[3' + dc3 + ';2;228mDC3:',
+		dc3,
+		'\t\033[3' + dc4 + ';2;228mDC4:',
+		dc4,
+		'\t\033[3' + dc5 + ';2;228mDC5:',
+		dc5
+	);
 	let n = 0;
 	for (let i = 0; i < telegram_servers.length; i++) {
 		n = Math.ceil(con_count[i] / REPORT_CON_SEC);
